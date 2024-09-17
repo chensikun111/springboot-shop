@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.shopvue.mapper.AdminMapper">
+    <select id="selectShopList" resultType="org.example.shopvue.model.ShopList">
+        select * from shoplist
+        <where>
+            <if test="shopid != null">
+                and shopid Like CONCAT('%', #{shopid}, '%')
+            </if>
+            <if test="name != null">
+                and name Like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="minPrice != 0 and maxPrice != 0">
+                and price between #{minPrice} and #{maxPrice}
+            </if>
+            <if test="price != 0">
+                and price = #{price}
+            </if>
+            <if test="category != null">
+                and category Like CONCAT('%', #{category}, '%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateShopNewPrice">
+        update shoplist set
+        <choose>
+            <when test="price == original_price">
+                price = #{price},original_price = 0
+            </when>
+            <otherwise>
+                price = #{price},original_price = #{original_price}
+            </otherwise>
+        </choose>
+        where shopid = #{shopId}
+    </update>
+
+    <select id="findOrderBySearchDate" resultType="org.example.shopvue.model.Order">
+        select * from `order`
+        <where>
+            <if test="uid != null">
+                and uid Like CONCAT('%', #{uid}, '%')
+            </if>
+            <if test="orderid != null">
+                and orderid Like CONCAT('%', #{orderid}, '%')
+            </if>
+            <if test="begin_date != null and close_date != null">
+                and paydate between #{begin_date} and #{close_date}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllOrder" resultType="org.example.shopvue.model.Order">
+        select * from `order` order by paydate desc
+    </select>
+
+
+
+</mapper>
